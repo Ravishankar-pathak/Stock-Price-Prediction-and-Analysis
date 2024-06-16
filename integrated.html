@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Tracker</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        select,
+        input[type="text"],
+        button {
+            padding: 8px;
+            margin-top: 10px;
+        }
+
+        select,
+        input[type="text"] {
+            width: 200px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        p {
+            margin-left: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Stock Information</h1>
+    <form method="POST">
+        <label for="ticker">Enter Ticker Symbol:</label>
+        <input type="text" id="ticker" name="ticker" required>
+        <label for="period">Select Period:</label>
+        <select id="period" name="period">
+            <option value="1mo">1 month</option>
+            <option value="3mo">3 months</option>
+            <option value="6mo">6 months</option>
+            <option value="1y">1 year</option>
+            <option value="2y">2 years</option>
+            <option value="5y">5 years</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if today_closing_price %}
+    <h2>Today's Closing Information</h2>
+    <p><strong>Closing Price as on {{ today_closing_date }} :</strong> {{ today_closing_price }}</p>
+    {% endif %}
+
+    {% if company_name %}
+    <h2>Company Information</h2>
+    <p><strong>Company Name:</strong> {{ company_name }}</p>
+    <p><strong>Symbol:</strong> {{ symbol }}</p>
+    <p><strong>Country:</strong> {{ country }}</p>
+    <p><strong>Sector:</strong> {{ sector }}</p>
+    <p><strong>Industry:</strong> {{ industry }}</p>
+    <p><strong>Website:</strong> <a href="{{ website }}">{{ website }}</a></p>
+    {% endif %}
+
+    {% if closing_price_html %}
+    <h2>Closing Price vs. Time ({{ period }})</h2>
+    {{ closing_price_html | safe }}
+    {% endif %}
+
+    <!-- {% if prediction_html %}
+    <h2>Prediction vs. Actual Price (Last Month)</h2>
+    {{ prediction_html | safe }} -->
+    <h2>Last Month Predictions vs. Actual Values</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Actual Price</th>
+                <th>Predicted Price</th>
+                <th>Predicted Price</th>
+                <th>Predicted Price</th>
+                <th>Predicted Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in table_data %}
+            <tr>
+                <td>{{ data.date }}</td>
+                <td>{{ data.actual_price }}</td>
+                <td>{{ data.gb_predicted_price }}</td>
+                <td>{{ data.svm_predicted_price }}</td>
+                <td>{{ data.lr_predicted_price }}</td>
+                <td>{{ data.rf_predicted_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- <h2>Prediction Accuracy (Modal Accuracy based on above prediction)</h2>
+    <p><strong>Accuracy:</strong> {{ accuracy }}%</p>
+    <h2>Next Day Prediction</h2>
+    <p><strong>Predicted Closing Price for Next Day ({{ next_day_date }}) :</strong> {{ next_day_predicted_price }}</p>
+    {% endif %} -->
+
+    {% if gb_accuracy or svm_accuracy or lr_accuracy or rf_accuracy %}
+    <h2>Model Accuracies:</h2>
+    <ul>
+        {% if gb_accuracy %}
+        <li>Gradient Boosting: {{ gb_accuracy }}</li>
+        {% endif %}
+        {% if svm_accuracy %}
+        <li>SVM: {{ svm_accuracy }}</li>
+        {% endif %}
+        {% if lr_accuracy %}
+        <li>Linear Regression: {{ lr_accuracy }}</li>
+        {% endif %}
+        {% if rf_accuracy %}
+        <li>Random Forest: {{ rf_accuracy }}</li>
+        {% endif %}
+    </ul>
+    {% endif %}
+
+    {% if plot_div %}
+    <div id="plot">
+        {{ plot_div|safe }}
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
